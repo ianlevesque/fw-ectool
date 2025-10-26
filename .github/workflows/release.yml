@@ -96,23 +96,7 @@ jobs:
 
           ls -lh packages/
 
-          # Generate checksums for verification
-          cd packages
-          sha256sum *.deb > SHA256SUMS
-          cat SHA256SUMS
-
-      - name: Upload Debian package as artifact
-        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8  # v4.3.0
-        with:
-          name: debian-package-${{ matrix.codename }}
-          path: |
-            packages/*.deb
-            packages/SHA256SUMS
-          retention-days: 7  # Reduced from 30 days
-          if-no-files-found: error  # Fail if no files found
-
       - name: Rename package with Ubuntu codename
-        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         run: |
           cd packages
@@ -129,9 +113,20 @@ jobs:
             esac
           done
 
-          # Regenerate checksums after renaming
+          # Generate checksums after renaming
           sha256sum *.deb > SHA256SUMS
+          cat SHA256SUMS
           ls -lh
+
+      - name: Upload Debian package as artifact
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8  # v4.3.0
+        with:
+          name: debian-package-${{ matrix.codename }}
+          path: |
+            packages/*.deb
+            packages/SHA256SUMS
+          retention-days: 7  # Reduced from 30 days
+          if-no-files-found: error  # Fail if no files found
 
   release:
     name: Create GitHub Release
