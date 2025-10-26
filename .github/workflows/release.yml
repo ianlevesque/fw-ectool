@@ -151,12 +151,19 @@ jobs:
       - name: Prepare release assets
         run: |
           mkdir -p release
-          find artifacts -name "*.deb" -exec cp {} release/ \;
+
+          # Copy all .deb files, preserving the renamed files with codenames
+          find artifacts -name "*.deb" -type f | while read file; do
+            cp -v "$file" release/
+          done
 
           # Combine all SHA256SUMS files
           find artifacts -name "SHA256SUMS" -exec cat {} \; > release/SHA256SUMS
 
+          echo "Release contents:"
           ls -lh release/
+          echo ""
+          echo "Total packages: $(ls -1 release/*.deb 2>/dev/null | wc -l)"
 
       - name: Upload release assets
         uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564  # v2.0.4
