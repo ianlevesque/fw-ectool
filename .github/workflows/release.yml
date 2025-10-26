@@ -79,14 +79,20 @@ jobs:
 
       - name: Rename package with Ubuntu codename
         if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
         run: |
           cd packages
           for deb in *.deb; do
-            if [[ ! "$deb" =~ dbgsym ]]; then
-              newname="${deb%.deb}_${{ matrix.codename }}.deb"
-              mv "$deb" "$newname"
-              echo "Renamed $deb to $newname"
-            fi
+            case "$deb" in
+              *dbgsym*)
+                echo "Skipping debug package: $deb"
+                ;;
+              *)
+                newname="${deb%.deb}_${{ matrix.codename }}.deb"
+                mv "$deb" "$newname"
+                echo "Renamed $deb to $newname"
+                ;;
+            esac
           done
           ls -lh
 
