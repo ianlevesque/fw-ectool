@@ -19,12 +19,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ubuntu-version:
-          - '20.04'  # Ubuntu 20.04 LTS (Focal Fossa) - ESM until 2030
-          - '22.04'  # Ubuntu 22.04 LTS (Jammy Jellyfish) - Support until 2027
-          - '24.04'  # Ubuntu 24.04 LTS (Noble Numbat) - Support until 2029
-          - '25.04'  # Ubuntu 25.04 (Plucky Puffin) - Support until Jan 2026
-          - '25.10'  # Ubuntu 25.10 (Questing Quokka) - Latest, Support until Jul 2026
+        include:
+          - ubuntu-version: '20.04'
+            codename: 'focal'
+            description: 'Ubuntu 20.04 LTS (Focal Fossa) - ESM until 2030'
+          - ubuntu-version: '22.04'
+            codename: 'jammy'
+            description: 'Ubuntu 22.04 LTS (Jammy Jellyfish) - Support until 2027'
+          - ubuntu-version: '24.04'
+            codename: 'noble'
+            description: 'Ubuntu 24.04 LTS (Noble Numbat) - Support until 2029'
+          - ubuntu-version: '25.04'
+            codename: 'plucky'
+            description: 'Ubuntu 25.04 (Plucky Puffin) - Support until Jan 2026'
+          - ubuntu-version: '25.10'
+            codename: 'questing'
+            description: 'Ubuntu 25.10 (Questing Quokka) - Latest, Support until Jul 2026'
 
     container:
       image: ubuntu:${{ matrix.ubuntu-version }}
@@ -60,17 +70,17 @@ jobs:
       - name: Upload Debian package as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debian-package-ubuntu-${{ matrix.ubuntu-version }}
+          name: debian-package-${{ matrix.codename }}
           path: packages/*.deb
           retention-days: 30
 
-      - name: Rename package with Ubuntu version
+      - name: Rename package with Ubuntu codename
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           cd packages
           for deb in *.deb; do
             if [[ ! "$deb" =~ dbgsym ]]; then
-              newname="${deb%.deb}_ubuntu${{ matrix.ubuntu-version }}.deb"
+              newname="${deb%.deb}_${{ matrix.codename }}.deb"
               mv "$deb" "$newname"
               echo "Renamed $deb to $newname"
             fi
@@ -111,17 +121,17 @@ jobs:
             Download the `.deb` file for your Ubuntu version and install it:
 
             ```bash
-            sudo dpkg -i ectool_*_ubuntu<version>.deb
+            sudo dpkg -i ectool_*_<codename>.deb
             sudo apt install -f  # Install any missing dependencies if needed
             ```
 
             ### Packages Available
 
-            - `ectool_*_ubuntu20.04.deb` - Ubuntu 20.04 LTS (Focal Fossa)
-            - `ectool_*_ubuntu22.04.deb` - Ubuntu 22.04 LTS (Jammy Jellyfish)
-            - `ectool_*_ubuntu24.04.deb` - Ubuntu 24.04 LTS (Noble Numbat) - Recommended
-            - `ectool_*_ubuntu25.04.deb` - Ubuntu 25.04 (Plucky Puffin)
-            - `ectool_*_ubuntu25.10.deb` - Ubuntu 25.10 (Questing Quokka) - Latest
+            - `ectool_*_focal.deb` - Ubuntu 20.04 LTS (Focal Fossa)
+            - `ectool_*_jammy.deb` - Ubuntu 22.04 LTS (Jammy Jellyfish)
+            - `ectool_*_noble.deb` - Ubuntu 24.04 LTS (Noble Numbat) - Recommended
+            - `ectool_*_plucky.deb` - Ubuntu 25.04 (Plucky Puffin)
+            - `ectool_*_questing.deb` - Ubuntu 25.10 (Questing Quokka) - Latest
 
             ### Fan Control Commands
 
