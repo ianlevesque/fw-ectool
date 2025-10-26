@@ -1,9 +1,11 @@
-ectool (1.0.0-1) unstable; urgency=medium
+ectool (0.0.1-1) unstable; urgency=medium
 
-  * Initial release
+  * Initial Debian packaging release
   * Extracted from ChromeOS EC repository
   * Added fwpdversion command for Framework Laptops
   * Added fwchargelimit command
   * Fixed compatibility with older GCC versions
+  * Added Debian/Ubuntu packaging support
+  * Added GitHub Actions workflow for automated builds
 
- -- ChromeOS EC Tool Maintainers <noreply@example.com>  Sun, 26 Oct 2025 00:00:00 +0000
+ -- Ian Levesque <ian@ianlevesque.org>  Sun, 26 Oct 2025 00:00:00 +0000
