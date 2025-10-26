@@ -1,4 +1,4 @@
-name: Build and Release Debian Package
+name: Build and Release Ubuntu Packages
 
 on:
   push:
@@ -11,9 +11,12 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-deb:
-    name: Build Debian Package (${{ matrix.ubuntu-version }})
+    name: Build Ubuntu ${{ matrix.ubuntu-version }} Package (${{ matrix.codename }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -99,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-release-notes:
-    name: Create Release Notes
+    name: Create Ubuntu Package Release Notes
     needs: build-deb
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
@@ -112,9 +115,9 @@ jobs:
           prerelease: false
           generate_release_notes: true
           body: |
-            ## ChromeOS EC Tool - Debian Package Release
+            ## ectool for Framework Laptops - Ubuntu Package Release
 
-            This release includes pre-built Debian packages for multiple Ubuntu versions.
+            This release includes pre-built Ubuntu packages for multiple versions.
 
             ### Installation
 
