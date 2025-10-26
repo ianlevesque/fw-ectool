@@ -20,10 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         ubuntu-version:
-          - '20.04'  # Ubuntu 20.04 LTS (Focal Fossa)
-          - '22.04'  # Ubuntu 22.04 LTS (Jammy Jellyfish)
-          - '24.04'  # Ubuntu 24.04 LTS (Noble Numbat)
-          - '24.10'  # Ubuntu 24.10 (Oracular Oriole) - Latest
+          - '20.04'  # Ubuntu 20.04 LTS (Focal Fossa) - ESM until 2030
+          - '22.04'  # Ubuntu 22.04 LTS (Jammy Jellyfish) - Support until 2027
+          - '24.04'  # Ubuntu 24.04 LTS (Noble Numbat) - Support until 2029
+          - '25.04'  # Ubuntu 25.04 (Plucky Puffin) - Support until Jan 2026
+          - '25.10'  # Ubuntu 25.10 (Questing Quokka) - Latest, Support until Jul 2026
 
     container:
       image: ubuntu:${{ matrix.ubuntu-version }}
@@ -115,8 +116,9 @@ jobs:
 
             - `ectool_*_ubuntu20.04.deb` - Ubuntu 20.04 LTS (Focal Fossa)
             - `ectool_*_ubuntu22.04.deb` - Ubuntu 22.04 LTS (Jammy Jellyfish)
-            - `ectool_*_ubuntu24.04.deb` - Ubuntu 24.04 LTS (Noble Numbat)
-            - `ectool_*_ubuntu24.10.deb` - Ubuntu 24.10 (Oracular Oriole)
+            - `ectool_*_ubuntu24.04.deb` - Ubuntu 24.04 LTS (Noble Numbat) - Recommended
+            - `ectool_*_ubuntu25.04.deb` - Ubuntu 25.04 (Plucky Puffin)
+            - `ectool_*_ubuntu25.10.deb` - Ubuntu 25.10 (Questing Quokka) - Latest
 
             ### Fan Control Commands
 
