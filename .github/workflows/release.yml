@@ -13,8 +13,21 @@ on:
 
 jobs:
   build-deb:
-    name: Build Debian Package
+    name: Build Debian Package (${{ matrix.ubuntu-version }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu-version:
+          - '20.04'  # Ubuntu 20.04 LTS (Focal Fossa)
+          - '22.04'  # Ubuntu 22.04 LTS (Jammy Jellyfish)
+          - '24.04'  # Ubuntu 24.04 LTS (Noble Numbat)
+          - '24.10'  # Ubuntu 24.10 (Oracular Oriole) - Latest
+
+    container:
+      image: ubuntu:${{ matrix.ubuntu-version }}
+      options: --privileged
 
     steps:
       - name: Checkout code
@@ -22,15 +35,16 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y \
             debhelper \
             devscripts \
             cmake \
             pkg-config \
             libusb-1.0-0-dev \
             libftdi1-dev \
-            build-essential
+            build-essential \
+            git
 
       - name: Build Debian package
         run: |
@@ -43,31 +57,66 @@ jobs:
       - name: Upload Debian package as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debian-package
+          name: debian-package-ubuntu-${{ matrix.ubuntu-version }}
           path: ../*.deb
           retention-days: 30
 
-      - name: Create Release
+      - name: Rename package with Ubuntu version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cd ..
+          for deb in *.deb; do
+            if [[ ! "$deb" =~ dbgsym ]]; then
+              newname="${deb%.deb}_ubuntu${{ matrix.ubuntu-version }}.deb"
+              mv "$deb" "$newname"
+              echo "Renamed $deb to $newname"
+            fi
+          done
+
+      - name: Upload release assets
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: ../*.deb
           draft: false
           prerelease: false
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-release-notes:
+    name: Create Release Notes
+    needs: build-deb
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: false
           generate_release_notes: true
           body: |
             ## ChromeOS EC Tool - Debian Package Release
 
-            This release includes a pre-built Debian package for Ubuntu/Debian systems.
+            This release includes pre-built Debian packages for multiple Ubuntu versions.
 
             ### Installation
 
-            Download the `.deb` file and install it:
+            Download the `.deb` file for your Ubuntu version and install it:
 
             ```bash
-            sudo dpkg -i ectool_*.deb
-            sudo apt install -f  # Install any missing dependencies
+            sudo dpkg -i ectool_*_ubuntu<version>.deb
+            sudo apt install -f  # Install any missing dependencies if needed
             ```
+
+            ### Packages Available
+
+            - `ectool_*_ubuntu20.04.deb` - Ubuntu 20.04 LTS (Focal Fossa)
+            - `ectool_*_ubuntu22.04.deb` - Ubuntu 22.04 LTS (Jammy Jellyfish)
+            - `ectool_*_ubuntu24.04.deb` - Ubuntu 24.04 LTS (Noble Numbat)
+            - `ectool_*_ubuntu24.10.deb` - Ubuntu 24.10 (Oracular Oriole)
 
             ### Fan Control Commands
 
