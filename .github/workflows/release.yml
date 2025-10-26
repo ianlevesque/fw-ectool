@@ -173,8 +173,6 @@ jobs:
 
             This release includes pre-built Ubuntu packages for multiple versions.
 
-            **⚠️ Security Notice**: Verify package integrity using the included SHA256SUMS file before installation.
-
             ### Installation
 
             Download the `.deb` file for your Ubuntu version and install it:
