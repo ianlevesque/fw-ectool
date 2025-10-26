@@ -1,0 +1,9 @@
+ectool (1.0.0-1) unstable; urgency=medium
+
+  * Initial release
+  * Extracted from ChromeOS EC repository
+  * Added fwpdversion command for Framework Laptops
+  * Added fwchargelimit command
+  * Fixed compatibility with older GCC versions
+
+ -- ChromeOS EC Tool Maintainers <noreply@example.com>  Sun, 26 Oct 2025 00:00:00 +0000

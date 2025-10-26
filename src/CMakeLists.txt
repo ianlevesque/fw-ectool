@@ -71,3 +71,8 @@ else()
 endif()
 
 target_link_libraries(ectool ${libusb_LIBRARIES} ${libftdi1_LIBRARIES})
+
+# Install the executable
+install(TARGETS ectool
+	RUNTIME DESTINATION bin
+)
